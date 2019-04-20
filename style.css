@@ -1,0 +1,33 @@
+form {
+margin: 20px auto;
+}
+  
+.users {
+display: flex;
+flex-direction: column;
+flex-wrap: wrap;
+}
+  
+.user {
+background: #efefef;
+margin: 5px;
+padding: 5px;
+position: relative;
+width: 400px;
+height: 100px;
+border-radius: 10px;
+}
+  
+.user__remove {
+position: absolute;
+top: 5px;
+right: 5px;
+border: none;
+background: none;
+font-weight: bold;
+cursor: pointer;
+}
+  
+.user__remove:hover {
+background: #fdfdfd;
+}
