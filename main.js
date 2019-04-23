@@ -25,7 +25,6 @@ function renderUsers(users) {
         userCard.classList.add("user-card");
         const clearBtn = document.createElement("img");
         clearBtn.classList.add("clear-button");
-        clearBtn.src = "img/trashbin.png";
         userCard.innerHTML = `
         <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
         container.append(userCard);
