@@ -31,3 +31,11 @@ cursor: pointer;
 .user__remove:hover {
 background: #fdfdfd;
 }
+
+.clear-button{
+    color:#666;
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    cursor: pointer;
+}
