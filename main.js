@@ -19,21 +19,6 @@ async function getUsers() {
 }
 getUsers()
 
-function renderUsers(users) {
-    users.forEach(usr => {
-        const userCard = document.createElement("div");
-        userCard.classList.add("user-card");
-        const clearBtn = document.createElement("img");
-        clearBtn.classList.add("clear-button");
-        clearBtn.src = "img/trashbin.png";
-        userCard.innerHTML = `
-        <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
-        container.append(userCard);
-        userCard.append(clearBtn);
-        clearBtn.addEventListener('click', () => { deleteUsers(usr.id, userCard) })
-    })
-}
-
 async function deleteUsers(userid, block) {
     try {
         const userDel = await axios.delete(URL + `${userid}`)
