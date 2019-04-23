@@ -23,8 +23,6 @@ function renderUsers(users) {
     users.forEach(usr => {
         const userCard = document.createElement("div");
         userCard.classList.add("user-card");
-        const clearBtn = document.createElement("img");
-        clearBtn.classList.add("clear-button");
         userCard.innerHTML = `
         <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
         container.append(userCard);
