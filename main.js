@@ -23,6 +23,9 @@ function renderUsers(users) {
     users.forEach(usr => {
         const userCard = document.createElement("div");
         userCard.classList.add("user-card");
+        const clearBtn = document.createElement("img");
+        clearBtn.classList.add("clear-button");
+        clearBtn.src = "img/trashbin.png";
         userCard.innerHTML = `
         <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
         container.append(userCard);
@@ -78,5 +81,4 @@ button.addEventListener('click', () => {
     }
     
 });
-
 
