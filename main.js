@@ -1,83 +1,79 @@
-const container = document.querySelector(".container");
-const URL = "https://test-users-api.herokuapp.com/users/";
-const button = document.querySelector("#create-user");
+const API = 'https://test-users-api.herokuapp.com/';
 
-async function getUsers() {
-    try {
-        const user = await axios.get(URL);
-        if (user.status == 200) {
-            console.log(user)
-            renderUsers(user.data.data);
-        }
-        else {
-            throw new Error();
-        }
-    }
-    catch (err) {
-        console.log("cannot get users", err);
-    }
-}
-getUsers()
-
-function renderUsers(users) {
-    users.forEach(usr => {
-        const userCard = document.createElement("div");
-        userCard.classList.add("user-card");
-        const clearBtn = document.createElement("img");
-        clearBtn.classList.add("clear-button");
-        clearBtn.src = "img/trashbin.png";
-        userCard.innerHTML = `
-        <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
-        container.append(userCard);
-        userCard.append(clearBtn);
-        clearBtn.addEventListener('click', () => { deleteUsers(usr.id, userCard) })
+const getUsers = () => {
+    return fetch(API + 'users').then(res => {
+        return res.json();
+    }).catch(err => {
+        console.log('couldnt find users', err);
+        return [];
     })
-}
+}; 
 
-async function deleteUsers(userid, block) {
+const deleteUser = async (userId, userElement) => {
     try {
-        const userDel = await axios.delete(URL + `${userid}`)
-        if (userDel.status == 200) {
-            block.remove();
-            console.log(userDel);
-        }
-        else throw new Error;
-    }
-    catch (err) {
-        console.log("cannot delete users", err);
+        const res = await fetch (API + 'users/' + userId, {method: 'DELETE'});
+        userElement.remove();
+    } catch(err) {
+        console.log('couldnt delete user', err);
     }
 }
 
-async function createUser(name, age) {
-    const userPost = await axios.post(URL, { name, age });
-    try {
-        if (userPost.status == 200) {
-            renderUsers([{ name, age }]);
-            console.log(userPost);
-        }
-        else {
-            throw new Error
-        }
-    }
-    catch (err) {
-        console.log('cannot post', err);
-    }
+const renderUsers = (users) => {
+    const container = document.querySelector('.users');
+
+    users.forEach(item => {
+        const userElement = document.createElement('div');
+        userElement.classList.add('user');
+        userElement.innerHTML = `
+        <h4>Name: ${item.name}</h4>
+        <h4> age: ${item.age}</h4>
+        `;
+        const removeBtn = document.createElement('button');
+        removeBtn.classList.add('user__remove');
+        removeBtn.textContent = 'X';
+        removeBtn.addEventListener('click', () => {
+        deleteUser(item.id, userElement);
+        })
+
+        userElement.append(removeBtn);
+        container.append(userElement);
+    });
 }
 
-button.addEventListener('click', () => {
-    const name = document.querySelector("#name");
-    const age = document.querySelector("#age");
-    let textMessage = "";
+const init = async () => {
+    const users = await getUsers();
+    renderUsers(users.data);
+}
 
-    if (isNaN(age.value) || age.value < 0 || name.value.length === 0 || age.value.length === 0 || Number(age.value) != parseInt(age.value, 10)) {
-        textMessage = "Input must not be empty, age must be positive and integer number";
-        document.querySelector("#message").innerHTML = textMessage;
-          
-    }
-    else {
-        textMessage="";
-        document.querySelector("#message").innerHTML = textMessage;
-        createUser(name.value, age.value);
-    }
-    
-});
+const createUser = () => {
+    const name = document.querySelector('#name').value;
+    const age = document.querySelector('#age').value;
+    fetch(API + 'users', {
+        method: 'POST',
+        body: JSON.stringify({name, age}),
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }
+      }).then(res => {
+        return res.json();
+      }).then(({id}) => {
+        const user = {
+          name,
+          age,
+          id
+        };
+        renderUsers([user]);
+      })
+      .catch(err => {
+        console.log('couldnt create a user', err);
+      })
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createUserBtn = document.querySelector('#create-user-btn')
+    createUserBtn.addEventListener('click', createUser);
+  });
+
+  init();
+
