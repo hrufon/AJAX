@@ -28,7 +28,7 @@ function renderUsers(users) {
         `
         const closeButton = document.createElement('img');
         closeButton.classList.add('close-button');
-        closeButton.src = "img/close.png"
+        closeButton.src = "close.png"
         container.append(userElement);
         userElement.append(closeButton);
         closeButton.addEventListener('click', () => {deleteUser(item.id, userElement)});
