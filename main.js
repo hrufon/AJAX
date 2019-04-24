@@ -1,78 +1,81 @@
-const API = 'https://test-users-api.herokuapp.com/';
+const URL = "https://test-users-api.herokuapp.com/users/";
 
-const getUsers = () => {
-    return fetch(API + 'users').then(res => {
-        return res.json();
-    }).catch(err => {
-        console.log('couldnt find users', err);
-        return [];
-    })
-}; 
-
-const deleteUser = async (userId, userElement) => {
+async function getUsers() {
     try {
-        const res = await fetch (API + 'users/' + userId, {method: 'DELETE'});
-        userElement.remove();
-    } catch(err) {
-        console.log('couldnt delete user', err);
+        const user = await axios.get(URL);
+        if (user.status == 200) {
+            console.log(user.data.data)
+            renderUsers(user.data.data)
+        } else {
+            throw new Error();
+        }
+    }
+    catch (err) {
+        console.log("Can't show users", err);
     }
 }
+getUsers();
 
-const renderUsers = (users) => {
-    const container = document.querySelector('.users');
+const container = document.querySelector(".container");
 
+function renderUsers(users) {
     users.forEach(item => {
         const userElement = document.createElement('div');
         userElement.classList.add('user');
         userElement.innerHTML = `
-        <h4>Name: ${item.name}</h4>
-        <h4> age: ${item.age}</h4>
-        `;
-        const removeBtn = document.createElement('button');
-        removeBtn.classList.add('user__remove');
-        removeBtn.textContent = 'X';
-        removeBtn.addEventListener('click', () => {
-        deleteUser(item.id, userElement);
-        })
-
-        userElement.append(removeBtn);
+        <p>Name: ${item.name}</p>
+        <p>Age: ${item.age}</p>
+        `
+        const closeButton = document.createElement('img');
+        closeButton.classList.add('close-button');
+        closeButton.src = "img/close.png"
         container.append(userElement);
-    });
+        userElement.append(closeButton);
+        closeButton.addEventListener('click', () => {deleteUser(item.id, userElement)});
+    })
 }
 
-const init = async () => {
-    const users = await getUsers();
-    renderUsers(users.data);
+async function createUsers(name, age){
+    const createUser = await axios.post(URL, {name, age})
+    try {
+        if (createUser.status == 200) {
+            console.log(createUser);
+            renderUsers([{ name, age }]);
+        }
+        else {
+            throw new Error
+        }
+    } catch (err) {
+        console.log("can't create user", err);
+    }
 }
 
-const createUser = () => {
-    const name = document.querySelector('#name').value;
-    const age = document.querySelector('#age').value;
-    fetch(API + 'users', {
-        method: 'POST',
-        body: JSON.stringify({name, age}),
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          }
-      }).then(res => {
-        return res.json();
-      }).then(({id}) => {
-        const user = {
-          name,
-          age,
-          id
-        };
-        renderUsers([user]);
-      })
-      .catch(err => {
-        console.log('couldnt create a user', err);
-      })
-};
+const button = document.querySelector('.add-user');
+const error = document.querySelector('.error');
 
-document.addEventListener('DOMContentLoaded', () => {
-    const createUserBtn = document.querySelector('#create-user-btn')
-    createUserBtn.addEventListener('click', createUser);
-  });
+button.addEventListener('click', () => {
+    const name = document.querySelector(".name");
+    const age = document.querySelector(".age");;
+    if(0<age.value && age.value <100){
+        createUsers(name.value,age.value);
+        error.style.display = "none";
+    } else {
+        error.innerText = 'enter correct name and age';
+        error.style.display = "block";
+    } 
+})
 
-  init();
+
+async function deleteUser(userId, box){
+    const deleteUsers = await axios.delete(URL + `${userId}`)
+    try {
+        if (deleteUsers.status == 200) {
+            box.remove();
+            console.log(deleteUsers);
+        }
+        else throw new Error;
+    }
+    catch (err) {
+        console.log("can't delete user", err);
+    }
+}
