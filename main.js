@@ -25,13 +25,6 @@ function renderUsers(users) {
         userElement.innerHTML = `
         <p>Name: ${item.name}</p>
         <p>Age: ${item.age}</p>
-        `
-        const closeButton = document.createElement('img');
-        closeButton.classList.add('close-button');
-        closeButton.src = "img/close.png"
-        container.append(userElement);
-        userElement.append(closeButton);
-        closeButton.addEventListener('click', () => {deleteUser(item.id, userElement)});
     })
 }
 
