@@ -20,18 +20,20 @@ async function getUsers() {
 getUsers()
 
 function renderUsers(users) {
-    users.forEach(usr => {
-        const userCard = document.createElement("div");
-        userCard.classList.add("user-card");
-        const clearBtn = document.createElement("img");
-        clearBtn.classList.add("clear-button");
-        clearBtn.src = "close.png";
-        userCard.innerHTML = `
-        <p>Name: ${usr.name} </p>  <p>Age: ${usr.age}</p> `;
-        container.append(userCard);
-        userCard.append(clearBtn);
-        clearBtn.addEventListener('click', () => { deleteUsers(usr.id, userCard) })
-    })
+    users.forEach(usr => renderUserCard(usr));
+}
+
+function renderUserCard(user){
+    const userCard = document.createElement("div");
+    userCard.classList.add("user-card");
+    const clearBtn = document.createElement("img");
+    clearBtn.classList.add("clear-button");
+    clearBtn.src = "close.png";
+    userCard.innerHTML = `
+    <p>Name: ${user.name} </p>  <p>Age: ${user.age}</p> `;
+    container.append(userCard);
+    userCard.append(clearBtn);
+    clearBtn.addEventListener('click', () => { deleteUsers(user.id, userCard) })
 }
 
 async function deleteUsers(userid, block) {
@@ -49,17 +51,16 @@ async function deleteUsers(userid, block) {
 }
 
 async function createUser(name, age) {
-    const userPost = await axios.post(URL, { name, age });
     try {
+        const userPost = await axios.post(URL, { name, age });
         if (userPost.status == 200) {
-            renderUsers([{ name, age }]);
-            console.log(userPost);
+            const createdUser = userPost.data.data;
+            renderUserCard({
+                    ...createdUser,
+                    id: createdUser._id,
+                });
         }
-        else {
-            throw new Error
-        }
-    }
-    catch (err) {
+    } catch (err) {
         console.log('cannot post', err);
     }
 }
